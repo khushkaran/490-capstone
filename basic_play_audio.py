@@ -1,10 +1,11 @@
-from playsound import playsound
+from playsound import playsound # need version 1.2.2
+
 def rfid():
     import serial
     ser = serial.Serial()
     ser.baudrate = 9600
     try:
-        ser.port = "/dev/cu.usbmodem142301"
+        ser.port = "COM3"
     except:
         print("error")
 
@@ -18,10 +19,17 @@ def rfid():
         return(RFID_Data)
 
 
-
 while(True):
     data = rfid()
     print(data)
 
-    if data == 942022212782:
+    if data == 23823921923205:
         print("hello")
+        playsound('filea.mp3') 
+        # audio = Path().cwd() / "filea.mp3"
+        # playsound(audio)
+    elif data == 23413422214535:
+        playsound("fileb.mp3")
+        # audio = Path().cwd() / "fileb.mp3"
+        # playsound(audio)
+
