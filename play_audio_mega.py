@@ -6,7 +6,7 @@ def rfid():
     ser = Serial()
     ser.baudrate = 9600
     try:
-        ser.port = "/dev/cu.usbmodem142101"
+        ser.port = "/dev/cu.usbmodem142201"
     except:
         print("error")
 
@@ -25,8 +25,7 @@ while(True):
     print(data)
 
     if data == 21814241145236:
-        print("hello")
-        playsound('filea.mp3')
+        playsound('filea.mp3') # change audioo that corresponds to tag for each reader
         # audio = Path().cwd() / "filea.mp3"
         # playsound(audio)
     elif data == 942022212782:
