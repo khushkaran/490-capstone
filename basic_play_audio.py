@@ -23,6 +23,7 @@ threadA.start()
 threadB = threading.Thread(target=serial_read, args=(serB, "serB"))
 threadB.start()
 
+
 while True:
 
     try:
