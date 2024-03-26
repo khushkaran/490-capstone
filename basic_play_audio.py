@@ -1,3 +1,5 @@
+from csv import DictReader
+
 from playsound import playsound  # need version 1.2.2
 from serial import Serial
 from queue import Queue
@@ -28,77 +30,22 @@ while True:
 
     try:
         port_name, tag = rfid_reader_queue.get(True, 1)
-        print(f"Reading from {port_name}: {tag}")
+        # from csv we find the row that has same port and tag as read and play audio associated with it
 
-        if port_name == "serA" and tag == "21814241145236":
-            playsound('fileb.mp3')
+        #print(f"Reading from {port_name}: {tag}")
 
-        if port_name == "serB" and tag == "21814241145236":
-            playsound('filea.mp3')
+        with open("sound_associations.csv", 'r') as f:
+            dict_reader = DictReader(f)
+            list_of_dict = list(dict_reader)
+
+
+        for row in list_of_dict:
+            if row['Tag'] == tag and row['Reader'] == port_name:
+                playsound("./sounds/"+ row['Sound'])
+
+
+
 
     except Empty:
         pass
 
-
-
-"""
-def rfid():
-
-    ser = Serial()
-    ser.baudrate = 9600
-
-    ser2 = Serial()
-    ser2.baudrate = 9600
-
-    try:
-        ser.port = "/dev/cu.usbmodem142301"
-        ser2.port = "/dev/cu.usbmodem142201"
-
-    except:
-        print("error")
-
-    ser.open()
-    ser2.open()
-
-    RFID_Data = ser.readline()
-    RFID_Data2 = ser2.readline()
-    if RFID_Data:
-        RFID_Data = RFID_Data.decode()  # Decode arduino Serial
-        RFID_Data = RFID_Data.strip()  # Strip Arduino Data to remove string
-        RFID_Data = int(RFID_Data);  # Convert the Data to Int
-
-    if RFID_Data2:
-        RFID_Data2 = RFID_Data2.decode()  # Decode arduino Serial
-        RFID_Data2 = RFID_Data2.strip()  # Strip Arduino Data to remove string
-        RFID_Data2 = int(RFID_Data2);  # Convert the Data to Int
-
-    return RFID_Data, RFID_Data2
-
-
-
-while (True):
-    # input ports that the readers are connected to
-    data = rfid()
-    print(data)
-
-  
-    if data == 21814241145236:
-        print("reading" +  " " + str(data) + " " + "from reader /dev/cu.usbmodem142301")
-        # playsound('fileb.mp3')
-        # audio = Path().cwd() / "filea.mp3"
-        # playsound(audio)
-    elif data == 942022212782:
-        print("reading" + " " + str(data) + " " + "from reader /dev/cu.usbmodem142301")
-        # playsound("filea.mp3")
-        # audio = Path().cwd() / "fileb.mp3"
-        # playsound(audio)
-
-    elif data2 == 21814241145236:
-        print("reading" + str(data2) + "from reader /dev/cu.usbmodem142201")
-
-    elif data2 == 942022212782:
-        print("reading" + str(data2) + "from reader /dev/cu.usbmodem142201")
-
-    else:
-        print("error")
-    """
