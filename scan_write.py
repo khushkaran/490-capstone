@@ -1,23 +1,30 @@
 import os.path
 import csv
-
-def rfid():
-    import serial
-    ser = serial.Serial()
-    ser.baudrate = 9600
-    try:
-        ser.port = "COM3"
-    except:
-        print("error")
+from queue import Queue
+import threading
+from queue import Empty
+from serial import Serial
 
 
-    ser.open()
-    RFID_Data=ser.readline()
-    if RFID_Data:
-        RFID_Data = RFID_Data.decode()  #Decode arduino Serial
-        RFID_Data = RFID_Data.strip()   #Strip Arduino Data to remove string
-        RFID_Data=int(RFID_Data);       #Convert the Data to Int
-        return(RFID_Data)
+#reference: https:// stackoverflow.com / questions / 38861980 / attempting - to - read -from-two - serial - ports - at - once
+
+rfid_reader_queue = Queue(1000)
+
+serA = Serial("/dev/cu.usbmodem142301")
+serB = Serial("/dev/cu.usbmodem142201")
+
+def serial_read(s, port_name):
+    while True:
+        try:
+            line = s.readline().decode().strip()
+            rfid_reader_queue.put((port_name, line))
+        except Exception as e:
+            print(f"Error reading from {port_name}: {e}")
+
+threadA = threading.Thread(target=serial_read, args=(serA, "serA"))
+threadA.start()
+threadB = threading.Thread(target=serial_read, args=(serB, "serB"))
+threadB.start()
 
 def check_if_tag_in_file(tag):
     with open("tag_characters.csv", "r") as character_file:
@@ -56,28 +63,34 @@ if __name__ == '__main__':
 
             term = True
             while(term):
-                data = rfid()
-                # add the reading information here
 
-                existing_character = check_if_tag_in_file(str(data))
-                if (existing_character != -1):
-                    print("This tag is alreaady associated with character " + existing_character + "; please scan a new tag.\n")
-                else:
-                    new_character = input("A new tag was detected. Please enter a name for this character.\n")
-                    append_tag_character_to_file(str(data), new_character)
-                    print("This tag is now associated with the following character: " + new_character)              
+                try:
+                    port_name, tag = rfid_reader_queue.get(True, 1) # readings the tag
+                    # add the reading information here
 
-                term = input("Type STOP if you are done scanning. Otherwise, press any key to continue.\n")
-                if (term == "STOP"):
-                    term = False
-                else:
-                    term = True
+                    existing_character = check_if_tag_in_file(str(tag))
+                    if (existing_character != -1):
+                        print("This tag is alreaady associated with character " + existing_character + "; please scan a new tag.\n")
+                    else:
+                        new_character = input("A new tag was detected. Please enter a name for this character.\n")
+                        append_tag_character_to_file(str(tag), new_character)
+                        print("This tag is now associated with the following character: " + new_character)
+
+                    term = input("Type STOP if you are done scanning. Otherwise, press any key to continue.\n")
+
+                    if (term == "STOP\n"):
+                        term = False
+                    else:
+                        term = True
+
+                except Empty:
+                    pass
         else:
             print("The old character file will be kept.")
-            
 
-    
 
-    # need function to check if this tag is already in the file. 
-    # need function to append the new pair to the end of the file. 
+
+
+    # need function to check if this tag is already in the file.
+    # need function to append the new pair to the end of the file.
 
