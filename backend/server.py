@@ -1,11 +1,15 @@
-from flask import Flask
+from flask import Flask, jsonify
+from flask_cors import CORS
 
-app = Flask(__name__)
+# how to run it: flask --app server --debug ru
+def create_app():
+    app = Flask(__name__)
+    CORS(app)
 
-@app.route("/members")
 
-def members():
-    return {"members": ["Member1", "Member2", "Member3"]}
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    @app.route('/members')
+    def api():
+        return jsonify({'data': "Hello World"})
+
+    return app
