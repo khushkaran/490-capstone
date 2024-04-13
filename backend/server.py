@@ -73,7 +73,9 @@ class AddChar(Resource):
         args =  update_char_args.parse_args()
         result = CharacterModel.query.filter_by(name=name).first()
         if not result:
-            abort(404, message="Character doesn't exsist")
+            result = CharacterModel.query.filter_by(name=(args['tag'] + args['reader'])).first()
+            if not result:
+                abort(404, message="Character doesn't exsist")
 
         if args["name"]:
             result.name = args['name']
