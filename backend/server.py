@@ -16,38 +16,47 @@ class CharacterModel(db.Model):
     name = db.Column(db.String(100), primary_key=True)
     tag = db.Column(db.String(100), nullable=False)
     reader = db.Column(db.String(100), nullable=False)
+    isRegistered = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return f"Character(name ={name}, tag = {tag}, reader = {reader})"
+        return f"Character(name ={self.name}, tag = {self.tag}, reader = {self.reader}, registered = {self.isRegistered})"
+
+
+
 
 set_char_args = reqparse.RequestParser()
 set_char_args.add_argument("name", type=str, help="Name of character is needed", required=True)
-set_char_args.add_argument("tag", type=str, help="tag is needed", required=True)
-set_char_args.add_argument("reader", type=str, help="reader is needed", required=True)
+set_char_args.add_argument("tag", type=str, help="Tag is needed", required=True)
+set_char_args.add_argument("reader", type=str, help="Reader is needed", required=True)
+
 
 update_char_args = reqparse.RequestParser()
 update_char_args.add_argument("name", type=str, help="Name of character is needed", required=True)
-update_char_args.add_argument("tag", type=str, help="tag is needed")
-update_char_args.add_argument("reader", type=str, help="reader is needed")
+update_char_args.add_argument("tag", type=str, help="Tag is needed")
+update_char_args.add_argument("reader", type=str, help="Reader is needed")
+
+
 
 resource_fields = {
     'name': fields.String,
     'tag': fields.String,
-    'reader': fields.String
+    'reader': fields.String,
 }
 
-resource_fields2 = {
+resource_fields_tag_and_reader = {
     'tag': fields.String,
     'reader': fields.String
 }
 
-resource_fields3 = {
-    'name': fields.String
+resource_fields_char_name = {
+    'name': fields.String,
 }
+
 
 
 class AddChar(Resource):
 
+    # get all info such as reader, tag, name and if it has been regsteried  for char with name
     @marshal_with(resource_fields)
     def get(self, name):
         result = CharacterModel.query.filter_by(name=name).first()
@@ -57,34 +66,44 @@ class AddChar(Resource):
     
    
     
+    # would only we ever called by python
     @marshal_with(resource_fields)
-    def put(self, name):
+    def put(self):
         args = set_char_args.parse_args()
-        result = CharacterModel.query.filter_by(name=name).first()
+        result = CharacterModel.query.filter_by(name=args['tag']).first()
         if result:
             abort(409, message="Character with name exsist")
-        character = CharacterModel(name=name, tag=args['tag'], reader=args['reader'])
+        character = CharacterModel(name=args['name'], tag=args['tag'], reader=args['reader'], isRegistered=False)
         db.session.add(character)
         db.session.commit()
         return character, 201
     
+
     @marshal_with(resource_fields)
-    def patch(self, name):
+    def patch(self):
         args =  update_char_args.parse_args()
-        result = CharacterModel.query.filter_by(name=name).first()
+
+        
+        result =  CharacterModel.query.filter_by(tag=args["tag"], reader=args["reader"]).first()
+
+       
+
+        # character with given name doesn't exsist so can't update
         if not result:
-            result = CharacterModel.query.filter_by(name=(args['tag'] + args['reader'])).first()
-            if not result:
                 abort(404, message="Character doesn't exsist")
 
-        if args["name"]:
-            result.name = args['name']
+        
+        result.name = args['name']
 
         if args["tag"]:
             result.tag = args['tag']
 
         if args["reader"]:
-            result.name = args['reader']
+            result.reader = args['reader']
+
+        result.isRegistered = True
+
+        print(result)
         
         db.session.commit()
 
@@ -106,7 +125,7 @@ class AddChar(Resource):
 
 class GetReaderAndTags(Resource):
 
-    @marshal_with(resource_fields2)
+    @marshal_with(resource_fields_tag_and_reader)
     def get(self):
         result = CharacterModel.query.all()
         if not result:
@@ -116,16 +135,30 @@ class GetReaderAndTags(Resource):
     
 class GetAllChar(Resource):
 
-    @marshal_with(resource_fields3)
+    # returns the name of all characters that have been scanned or an emoty list if there are no character names
+    @marshal_with(resource_fields_char_name)
     def get(self):
-        result = CharacterModel.query.all()
-        if not result:
-            abort(404, message="No characters exsist")
+        result = CharacterModel.query.filter_by(isRegistered=True).all()
+        print(result)
         return result
-    
-api.add_resource(AddChar, "/addChar/<string:name>")
-api.add_resource(GetReaderAndTags, "/getReaderAndTags")
+
+        
+
+class GetRecentlyScannedChar(Resource):
+
+    # returns the oldest tag thats doesn't have a character name with the reader and tag its associated with or an empty list if all characters have a name/there are no characters
+    @marshal_with(resource_fields_tag_and_reader)
+    def get(self):
+        result =  CharacterModel.query.filter_by(isRegistered=False).first()
+        return result
+
+
+
+
+api.add_resource(AddChar, "/addChar")
+#api.add_resource(GetReaderAndTags, "/getReaderAndTags")
 api.add_resource(GetAllChar, "/getAllChar")
+api.add_resource(GetRecentlyScannedChar, "/getRecentlyScannedChar")
     
 if __name__ == "__main__":
     app.run(debug=True)

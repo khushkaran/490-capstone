@@ -10,8 +10,8 @@ import requests
 #reference: https:// stackoverflow.com / questions / 38861980 / attempting - to - read -from-two - serial - ports - at - once
 rfid_reader_queue = Queue(1000)
 
-serA = Serial("/dev/cu.usbmodem141101")
-serB = Serial("/dev/cu.usbmodem141201")
+serA = Serial("/dev/cu.usbmodem142201")
+serB = Serial("/dev/cu.usbmodem142101")
 
 def serial_read(s, port_name):
     while True:
@@ -36,15 +36,32 @@ while True:
 
 
         #print(tag+port_name)
-        data = {"name": str(tag+port_name), "tag": tag, "reader": port_name}
+        """"""
+        name = str(tag+port_name)
+        data = {"name": name, "tag": tag, "reader": port_name}
         #print(data)
-        response = requests.put(BASE + "/addChar/" + str(tag + port_name), data)
+        response = requests.put(BASE + "/addChar", data)
         print(response.json())
+
+
+        """
 
         input()
         #addChar/942022212782serA
+        response = requests.get(BASE + "/getRecentlyScannedChar")
+        print(response.json())
+        """
+
+        """
+        response = requests.patch(BASE + "/addChar", data)
+        print(response.json())
+
+        input()
+
         response = requests.get(BASE + "/getAllChar")
         print(response.json())
+        
+        """
 
 
 
