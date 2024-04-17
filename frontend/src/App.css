@@ -1,38 +1,91 @@
-.App {
+body{
+  margin: 5%;
+  background-color: white;
+}
+
+h1{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  font-size: 50px;
+}
+
+h3{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  font-size: 25px;
+}
+
+p{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.listOfExistingCharacters{
+  background-color: transparent;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.characterRegistration{
+  background-color: transparent;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.setCharacterNameForm{
+  display: grid;
+  grid-template-columns: auto auto;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+.characterNameInput{
+  font-size: 15px;
+  margin: 2%;
+}
+
+.submitButton{
+  flex-shrink: 0;
+  background-color: rgb(171, 255, 168);
+  border-radius: 10px;
+  border: none;
+  margin: 2%;
+  transition-duration: 0.4s;
+  padding: 5px 20px;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.submitButton:hover{
+  background-color: rgb(229, 255, 228);
+  color: rgb(68, 196, 64);
+  border: 3px solid rgb(88, 226, 83);
+}
+
+
+.characterNamesContainer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+}
+
+.characterNameItem {
+  width: 25%; /* Each item takes up 25% of the container width to fit 4 items per row */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+  padding: 10px; /* Adjust padding as needed */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.nameButton {
+  background-color: rgb(168, 245, 255);
+  border-radius: 10px;
+  border: 3px transparent;
+  margin: 2%;
+  transition-duration: 0.4s;
+  padding: 2% 10%;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.nameButton:hover{
+  background-color: rgb(231, 252, 255);
+  color: rgb(72, 220, 240);
+  border: 3px solid rgb(75, 234, 255);
 }

@@ -67,28 +67,26 @@ function App() {
   return (
     <div class="characterRegistrationPage">
       <div class="listOfExistingCharacters">
-        <table>
-          <tr key="header">
-            Registered Characters
-          </tr>
-          <tr key={"headerExplanation"}>
-            The following characters have already been registered:
-          </tr>
+        <h1 key={"header"}>Register Tags and Characters</h1>
+        {(Object.keys(listOfCharacters).length===0) ? (<h3 key={"headerExplanation"}>There are currently no registered characters.</h3>) : (<h3 key={"headerExplanation"}>The following characters have already been registered:</h3>)}
+        <div class="characterNamesContainer">
           {listOfCharacters.map((item) => (
-          <tr key={item.id} class="characterName">
+          <div class="characterNameItem">
             {Object.values(item).map((val) => (
-              <td>{val}</td>
+              <button class="nameButton">{val}</button>
             ))}
-          </tr>
-        ))}
-        </table>
+          </div>
+        ))
+          }
+        </div>
       </div>
       <div class="characterRegistration">
-        {displayForm ? (<p>Tag detected. Give this tag a character name.</p>) : (<p>Scan a tag, and a prompt will appear to name the character associated with that tag.</p>)}
+        <h3>Register New Characters:</h3>
+        {displayForm ? (<p class='scanTag'>Tag detected. Give this tag a character name.</p>) : (<p class='scanTag'>Scan a tag, and a prompt will appear to name the character associated with that tag.</p>)}
         {displayForm ? (<div class="characterRegistrationPopup">
-          <form name="setCharacterNameForm" action={submitCharacterName}>
-            <input name="name"/>
-            <button type="button" onClick={submitCharacterName}>Submit Name</button>
+          <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitCharacterName}>
+            <input class="characterNameInput" name="name"/>
+            <button class="submitButton" type="button" onClick={submitCharacterName}>Submit Name</button>
           </form>
         </div>) : null}
       </div>
