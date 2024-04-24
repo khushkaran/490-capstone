@@ -139,12 +139,11 @@ p{
 }
 
 .sidebar{
-  /* top: auto;
-  left: auto; */
-  /* width: 17%; */
   background-color: transparent;
   display: flex;
   flex-wrap: wrap;
+  background-color: rgb(240, 240, 240);
+  border-radius: 10px;
 }
 
 .sidebarItem {
