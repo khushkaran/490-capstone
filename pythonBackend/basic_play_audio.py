@@ -10,8 +10,10 @@ import requests
 #reference: https:// stackoverflow.com / questions / 38861980 / attempting - to - read -from-two - serial - ports - at - once
 rfid_reader_queue = Queue(1000)
 
-serA = None
-serB = None
+reader1 = None
+reader2 = None
+reader3 = None
+reader4 = None
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -29,20 +31,28 @@ def serial_read(s, port_name):
 def startThreading():
     global threadingNotStarted
     if (threadingNotStarted):
-        threadA = threading.Thread(target=serial_read, args=(serA, "serA"))
+        threadA = threading.Thread(target=serial_read, args=(reader1, "reader1"))
         threadA.start()
         threadB = threading.Thread(target=serial_read,
-                                    args=(serB, "serB"))
+                                    args=(reader2, "reader2"))
         threadB.start()
+        threadC = threading.Thread(target=serial_read,
+                                    args=(reader3, "reader3"))
+        threadC.start()
+        threadD = threading.Thread(target=serial_read,
+                                    args=(reader4, "reader4"))
+        threadD.start()
         threadingNotStarted = False
         print("starting threading")
 
 def assignSerialPorts():
 
-    global serA
-    global serB
+    global reader1
+    global reader2
+    global reader3
+    global reader4
 
-    if serA is None:
+    if reader1 is None:
         # get serial ports from backend
         response = requests.get(BASE + "/ports")
         result = response.json()
@@ -50,10 +60,10 @@ def assignSerialPorts():
 
         if result !=  []:
             # user has passed serial ports
-            serA = Serial(result[0]['port'])
-            serB = Serial(result[1]['port'])
-            # serC = Serial(result[2])
-            ## serD = Serial(result[3])
+            reader1 = Serial(result[0]['port'])
+            reader2 = Serial(result[1]['port'])
+            reader3 = Serial(result[2]['port'])
+            reader4 = Serial(result[3]['port'])
             print("done assigning ports")
             return True
 
@@ -73,7 +83,7 @@ while True:
 
             port_name, tag = rfid_reader_queue.get(True, 1)
             name = str(tag+port_name)
-            data = {"name": name, "tag": tag, "reader": port_name}
+            data = {"name": name, "tag": tag, "reader": port_name, "soundFile": ""}
 
             # get tag and reader info from database
             response = requests.get(BASE + "/modifyChar", data)
@@ -89,7 +99,7 @@ while True:
                 # there is such association, so it is being tapped again to play the sound
                 soundFile = result['soundFile']
 
-                if (soundFile != None):
+                if (soundFile != ""):
                     # sound file exsist
                     playsound(soundFile)
 
