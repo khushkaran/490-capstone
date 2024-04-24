@@ -55,7 +55,7 @@ function SoundRegistration() {
         <div class="soundRegistrationPage">
             <div class='sidebar'>
                 <div class="sidebarItem">
-                    <button class="sidebarButton" id='readersNav' onClick={() => readerRoute()}>Register RFID Readers</button>
+                    <button class="sidebarButton" id='readersNav' onClick={() => readerRoute()}>Register Arduinos</button>
                 </div>
                 <div class="sidebarItem">
                     <button class="sidebarButton" id='charactersNav' onClick={() => characterRoute()}>Register Characters</button>

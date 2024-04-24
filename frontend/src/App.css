@@ -36,6 +36,13 @@ p{
   margin-right: 30%;
 }
 
+.registerArduinosForm{
+  display: grid;
+  grid-template-columns: auto auto;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
 .characterNameInput{
   font-size: 15px;
   margin: 2%;
@@ -56,6 +63,23 @@ p{
   background-color: rgb(229, 255, 228);
   color: rgb(68, 196, 64);
   border: 3px solid rgb(88, 226, 83);
+}
+
+.resetButton{
+  flex-shrink: 0;
+  background-color: rgb(168, 245, 255);
+  border-radius: 10px;
+  border: none;
+  margin: 2%;
+  transition-duration: 0.4s;
+  padding: 5px 20px;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.resetButton:hover{
+  background-color: rgb(231, 252, 255);
+  color: rgb(72, 220, 240);
+  border: 3px solid rgb(75, 234, 255);
 }
 
 
