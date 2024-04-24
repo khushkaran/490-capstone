@@ -111,69 +111,58 @@ p{
   color: rgb(255, 92, 138);
 }
 
-.conversionButton{
+#readersNav{
   background-color: rgb(255, 253, 153);
-  padding: 2% 10%;
-  font-size: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 10px;
-  transition-duration: 0.4s;
-  margin: 2%;
-  width: 95%;
-  border: none;
 }
-.conversionButton:hover{
+#readersNav:hover{
   background-color: rgb(255, 254, 213);
   color: rgb(202, 189, 0);
   border: 3px solid rgb(255, 252, 46)
 }
 
-.sonorityButton{
+#charactersNav{
   background-color: rgb(171, 255, 168);
-  padding: 2% 10%;
-  font-size: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 10px;
-  transition-duration: 0.4s;
-  margin: 2%;
-  width: 95%;
-  border: none;
 }
-.sonorityButton:hover{
+#charactersNav:hover{
   background-color: rgb(229, 255, 228);
   color: rgb(68, 196, 64);
   border: 3px solid rgb(88, 226, 83);
 }
 
-.documentationButton{
+#soundsNav{
   background-color: rgb(248, 174, 248);
-  padding: 2% 10%;
-  font-size: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 10px;
-  transition-duration: 0.4s;
-  margin: 2%;
-  width: 95%;
-  border: none;
 }
-.documentationButton:hover{
+#soundsNav:hover{
   background-color: rgb(250, 233, 250);
   color: rgb(214, 98, 214);
   border: 3px solid rgb(214, 98, 214);
 }
 
 .sidebar{
-  position: fixed;
-  top: auto;
-  left: auto;
-  width: 17%;
+  /* top: auto;
+  left: auto; */
+  /* width: 17%; */
   background-color: transparent;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.nonSideBar{
-  background-color: white;
-  position: relative;
-  left: 21%;
-  width: 75%;
-  padding: 10px;
+.sidebarItem {
+  width: 33%; /* Each item takes up 25% of the container width to fit 4 items per row */
+  box-sizing: border-box; /* Include padding and border in the width calculation */
+  padding: 10px; /* Adjust padding as needed */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebarButton {
+  border-radius: 10px;
+  border: 3px transparent;
+  margin: 2%;
+  transition-duration: 0.4s;
+  padding: 2% 10%;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

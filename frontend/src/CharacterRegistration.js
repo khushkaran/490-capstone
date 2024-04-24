@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from "react-router-dom";
+
 
 function CharacterRegistration() {
 
@@ -6,6 +8,22 @@ function CharacterRegistration() {
   const [characterAwaitingName, setCharacterAwaitingName] = useState([])
   const [displayForm, setDisplayForm] = useState(0)
   const [invalidCharacterForm, setInvalidCharacterForm] = useState(0)
+
+  let navigate = useNavigate(); 
+  const readerRoute = () =>{ 
+    let path = `/`; 
+    navigate(path);
+  }
+
+  const characterRoute = () =>{ 
+    let path = `/characterRegistration`; 
+    navigate(path);
+  }
+
+  const soundRoute = () =>{ 
+    let path = `/soundRegistration`; 
+    navigate(path);
+  }
 
   function submitCharacterName() {
     const charName = document.forms["setCharacterNameForm"]["name"].value
@@ -60,7 +78,7 @@ function CharacterRegistration() {
       }
     }).catch(error => {
       console.log(error)
-    })    
+    })
   }
 
   useEffect(() => {
@@ -100,36 +118,51 @@ function CharacterRegistration() {
       console.log('characterAwaitingName does not contain a valid tag-reader combination. Form will not be rendered.')
     }
 
-    return () => {clearInterval(checkForNewCharInterval)
-    clearInterval(checkForInvalidCharacterSubmittedInterval)}
+    return () => {
+      clearInterval(checkForNewCharInterval)
+      clearInterval(checkForInvalidCharacterSubmittedInterval)
+    }
   }, [characterAwaitingName, invalidCharacterForm])
 
   return (
     <div class="characterRegistrationPage">
-      <div class="listOfExistingCharacters">
-        <h1 key={"header"}>Register Tags and Characters</h1>
-        {(Object.keys(listOfCharacters).length === 0) ? (<h3 key={"headerExplanation"}>There are currently no registered characters.</h3>) : (<h3 key={"headerExplanation"}>The following characters have already been registered:</h3>)}
-        <div class="characterNamesContainer">
-          {listOfCharacters.map((item) => (
-            <div class="characterNameItem">
-              {Object.values(item).map((val) => (
-                <button class="nameButtonDelete" onClick={() => deleteCharacterName(val)}>{val}</button>
-              ))}
-            </div>
-          ))
-          }
+      <div class='sidebar'>
+        <div class="sidebarItem">
+        <button class="sidebarButton" id='readersNav' onClick={() => readerRoute()}>Register RFID Readers</button>
+        </div>
+        <div class="sidebarItem">
+        <button class="sidebarButton" id='charactersNav' onClick={() => characterRoute()}>Register Characters</button>
+        </div>
+        <div class="sidebarItem">
+        <button class="sidebarButton" id='soundsNav' onClick={() => soundRoute()}>Register Sounds</button>
         </div>
       </div>
-      <div class="characterRegistration">
-        <h3>Register New Characters:</h3>
-        {displayForm ? (<p class='scanTag'>Tag detected. Give this tag a character name.</p>) : (<p class='scanTag'>Scan a tag, and a prompt will appear to name the character associated with that tag.</p>)}
-        {displayForm ? (<div class="characterRegistrationPopup">
-          <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitCharacterName}>
-            <input class="characterNameInput" name="name" />
-            <button class="submitButton" type="button" onClick={submitCharacterName}>Submit Name</button>
-          </form>
-        {invalidCharacterForm ? (<p class="invalidCharacterSubmitted">The character name you submitted is invalid. Please ensure your character names are unique and between 1 and 12 characters in length.</p>) : null}
-        </div>) : null}
+      <div class="nonSidebar">
+        <div class="listOfExistingCharacters">
+          <h1 key={"header"}>Register Tags and Characters</h1>
+          {(Object.keys(listOfCharacters).length === 0) ? (<h3 key={"headerExplanation"}>There are currently no registered characters.</h3>) : (<h3 key={"headerExplanation"}>The following characters have already been registered:</h3>)}
+          <div class="characterNamesContainer">
+            {listOfCharacters.map((item) => (
+              <div class="characterNameItem">
+                {Object.values(item).map((val) => (
+                  <button class="nameButtonDelete" onClick={() => deleteCharacterName(val)}>{val}</button>
+                ))}
+              </div>
+            ))
+            }
+          </div>
+        </div>
+        <div class="characterRegistration">
+          <h3>Register New Characters:</h3>
+          {displayForm ? (<p class='scanTag'>Tag detected. Give this tag a character name.</p>) : (<p class='scanTag'>Scan a tag, and a prompt will appear to name the character associated with that tag.</p>)}
+          {displayForm ? (<div class="characterRegistrationPopup">
+            <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitCharacterName}>
+              <input class="characterNameInput" name="name" />
+              <button class="submitButton" type="button" onClick={submitCharacterName}>Submit Name</button>
+            </form>
+            {invalidCharacterForm ? (<p class="invalidCharacterSubmitted">The character name you submitted is invalid. Please ensure your character names are unique and between 1 and 12 characters in length.</p>) : null}
+          </div>) : null}
+        </div>
       </div>
     </div>
   )
