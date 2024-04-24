@@ -86,7 +86,7 @@ while True:
             data = {"name": name, "tag": tag, "reader": port_name, "soundFile": ""}
 
             # get tag and reader info from database
-            response = requests.get(BASE + "/modifyChar", data)
+            response = requests.get(BASE + "/updateChar/" + name)
             result = response.json()
 
 

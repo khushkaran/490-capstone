@@ -26,7 +26,8 @@ class CharacterModel(db.Model):
         return f"Character(name ={self.name}, tag = {self.tag}, reader = {self.reader}, registered = {self.isRegistered})"
     
 class PortModel(db.Model):
-    port = db.Column(db.String(200), primary_key=True)
+    name = db.Column(db.String(100), primary_key=True)
+    port = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
         return f"Port(port = {self.port})"
@@ -67,8 +68,7 @@ add_ports_args.add_argument("reader2", type=str, help="reader2 is needed", requi
 add_ports_args.add_argument("reader3", type=str, help="reader3 is needed", required=True)
 add_ports_args.add_argument("reader4", type=str, help="reader4 is needed", required=True)
 
-char_table_args = reqparse.RequestParser()
-char_table_args.add_argument("name", type=str, help="name is needed", required=True)
+
 
 
 
@@ -110,14 +110,13 @@ resource_fields_ports = {
     'reader4': fields.String,
 }
 
-resource_fields_ports_check = {
+resource_fields_name_and_ports= {
+    'name': fields.String,
     'port': fields.String,
 }
 
 
 resource_fields_char_table = {
-    'name': fields.String,
-    'reader': fields.String,
     'soundFile': fields.String
 }
 
@@ -127,14 +126,6 @@ resource_fields_char_table = {
 
 class ModifyChar(Resource):
 
-    # get soundfile associated with character
-    @marshal_with(resource_fields_sound_file)
-    def get(self):
-        args = get_char_args.parse_args()
-        result = CharacterModel.query.filter_by(tag=args['tag'], reader=args['reader']).first()
-        if not result:
-            return []
-        return result
     
    
     
@@ -231,7 +222,6 @@ class LinkSoundFileToCharcater(Resource):
 
     @marshal_with(resource_fields_update_char)
     def patch(self):
-
         args =  add_sound_file_to_char_args.parse_args()
         result =  CharacterModel.query.filter_by(name=args["prevName"]).first()
         # character with given name doesn't exsist so can't update
@@ -250,21 +240,15 @@ class LinkSoundFileToCharcater(Resource):
         return result
     
     @marshal_with(resource_fields_char_table)
-    def get(self):
-
-        args =  char_table_args.parse_args()
-        result =  CharacterModel.query.filter_by(name=args["name"]).first()
-
+    def get(self, name):
+        result =  CharacterModel.query.filter_by(name=name).first()
         if not result:
-            abort(404, message="Character doesn't exsist")
-        
+            return []
         return result
-
-    
     
 class Ports(Resource):
 
-    @marshal_with(resource_fields_ports_check)
+    @marshal_with(resource_fields_name_and_ports)
     def get(self):
         result = PortModel.query.all()
         if not result:
@@ -273,30 +257,42 @@ class Ports(Resource):
         return result
 
     @marshal_with(resource_fields_ports)
-    def put(self):
+    def patch(self):
         args =  add_ports_args.parse_args() 
-        reader1Result = PortModel.query.filter_by(port=args['reader1']).first()
-        reader2Result = PortModel.query.filter_by(port=args['reader2']).first()
-        reader3Result = PortModel.query.filter_by(port=args['reader3']).first()
-        reader4Result = PortModel.query.filter_by(port=args['reader4']).first()
-        if reader1Result or reader2Result or reader3Result or reader4Result:
-            abort(409, message="serial port already exsist")
+        reader1Result = PortModel.query.filter_by(name='reader1').first()
+        reader2Result = PortModel.query.filter_by(name='reader2').first()
+        reader3Result = PortModel.query.filter_by(name='reader3').first()
+        reader4Result = PortModel.query.filter_by(name='reader4').first()
 
-        reader1 = PortModel(port=args['reader1'])
-        reader2 = PortModel(port=args['reader2'])
-        reader3 = PortModel(port=args['reader3'])
-        reader4 = PortModel(port=args['reader4'])
-        db.session.add(reader1)
-        db.session.add(reader2)
-        db.session.add(reader3)
-        db.session.add(reader4)
+        # no ports have been assgined yet
+        if not reader1Result:
+            reader1 = PortModel(name="reader1", port=args['reader1'])
+            reader2 = PortModel(name="reader2", port=args['reader2'])
+            reader3 = PortModel(name="reader3", port=args['reader3'])
+            reader4 = PortModel(name="reader4", port=args['reader4'])
+            db.session.add(reader1)
+            db.session.add(reader2)
+            db.session.add(reader3)
+            db.session.add(reader4)
+
+        else:
+            # ports have been assigned, just being updated
+            reader1Result.port = args['reader1']
+            reader2Result.port = args['reader2']
+            reader3Result.port = args['reader3']
+            reader4Result.port = args['reader4']
+
         db.session.commit()
-        return {"reader1": reader1.port, "reader2": reader2.port, "reader3": reader3.port, "reader4": reader4.port}, 201
+
+        return {"reader1": args['reader1'], "reader2": args['reader2'], "reader3": args['reader3'], "reader4": args['reader4']}, 201
+    
+ 
+     
     
 api.add_resource(ModifyChar, "/modifyChar")
 api.add_resource(GetAllChar, "/getAllChar")
 api.add_resource(GetRecentlyScannedChar, "/getRecentlyScannedChar")
-api.add_resource(LinkSoundFileToCharcater, "/updateChar")
+api.add_resource(LinkSoundFileToCharcater, "/updateChar/<string:name>")
 api.add_resource(Ports, "/ports")
 
 
