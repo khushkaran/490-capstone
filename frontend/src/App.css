@@ -89,3 +89,24 @@ p{
   color: rgb(72, 220, 240);
   border: 3px solid rgb(75, 234, 255);
 }
+
+.nameButtonDelete {
+  background-color: rgb(168, 245, 255);
+  border-radius: 10px;
+  border: 3px transparent;
+  margin: 2%;
+  transition-duration: 0.4s;
+  padding: 2% 10%;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.nameButtonDelete:hover{
+  background-color: rgb(255, 239, 244);
+  color: rgb(255, 92, 138);
+  border: 3px solid rgb(255, 133, 168);
+  text-decoration: line-through;
+}
+
+.invalidCharacterSubmitted {
+  color: rgb(255, 92, 138);
+}

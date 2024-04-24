@@ -1,31 +1,66 @@
 import React, { useEffect, useState } from 'react'
 
-function App() {
+function CharacterRegistration() {
 
   const [listOfCharacters, setListOfCharacters] = useState([])
   const [characterAwaitingName, setCharacterAwaitingName] = useState([])
   const [displayForm, setDisplayForm] = useState(0)
+  const [invalidCharacterForm, setInvalidCharacterForm] = useState(0)
 
   function submitCharacterName() {
     const charName = document.forms["setCharacterNameForm"]["name"].value
-    console.log(`submitCharacterName: Form has been submitted with name ${charName}, and will be associated with tag ${characterAwaitingName['tag']} and reader ${characterAwaitingName['reader']}`)
+    if (charName.length < 1 || charName.length > 12) {
+      setInvalidCharacterForm(1);
+      console.log("Setting invalidCharacterForm to 1")
+    } else {
+      console.log(`submitCharacterName: Form has been submitted with name ${charName}, and will be associated with tag ${characterAwaitingName['tag']} and reader ${characterAwaitingName['reader']}`)
 
-    fetch(`http://127.0.0.1:5000/modifyChar`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ "name": charName, "tag": characterAwaitingName['tag'], "reader": characterAwaitingName['reader'] })
-    }).then(function (response) {
-      if (!response.ok) {
-        console.log(`There is an issue with the character name.`)
-      }
-    }).catch(error => {
-      console.log(error)
-    })
+      fetch(`http://127.0.0.1:5000/modifyChar`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "name": charName, "tag": characterAwaitingName['tag'], "reader": characterAwaitingName['reader'] })
+      }).then(function (response) {
+        if (!response.ok) {
+          setInvalidCharacterForm(1);
+          console.log(`There is an issue with the character name.`)
+        }
+      }).catch(error => {
+        setInvalidCharacterForm(1);
+        console.log(error)
+      })
+    }
 
     setDisplayForm(0)
     setCharacterAwaitingName([])
+  }
+
+  function deleteCharacterName(charName) {
+    console.log(`Trying to delete ${charName}.`)
+    fetch(`http://127.0.0.1:5000/modifyChar`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ "name": charName })
+    }).then(function (response) {
+      if (!response.ok) {
+        console.log(`Character ${charName} was not deleted.`)
+      } else {
+        console.log('Fetching character list after deletion.')
+        fetch('http://127.0.0.1:5000/getAllChar', {
+          method: 'GET',
+        }).then(function (response) {
+          return response.json();
+        }).then(function (myJson) {
+          setListOfCharacters(myJson)
+          console.log(`GET call to getAllChar completed, and ${listOfCharacters} stored in listOfCharacters.`)
+        })
+      }
+    }).catch(error => {
+      console.log(error)
+    })    
   }
 
   useEffect(() => {
@@ -37,6 +72,10 @@ function App() {
       setListOfCharacters(myJson)
       console.log(`GET call to getAllChar completed, and ${listOfCharacters} stored in listOfCharacters.`)
     })
+
+    let checkForInvalidCharacterSubmittedInterval = setInterval(() => {
+      setInvalidCharacterForm(0);
+    }, 5000)
 
     let checkForNewCharInterval = setInterval(() => {
       fetch('http://127.0.0.1:5000/getRecentlyScannedChar', {
@@ -61,8 +100,9 @@ function App() {
       console.log('characterAwaitingName does not contain a valid tag-reader combination. Form will not be rendered.')
     }
 
-    return () => clearInterval(checkForNewCharInterval)
-  }, [characterAwaitingName])
+    return () => {clearInterval(checkForNewCharInterval)
+    clearInterval(checkForInvalidCharacterSubmittedInterval)}
+  }, [characterAwaitingName, invalidCharacterForm])
 
   return (
     <div class="characterRegistrationPage">
@@ -73,7 +113,7 @@ function App() {
           {listOfCharacters.map((item) => (
             <div class="characterNameItem">
               {Object.values(item).map((val) => (
-                <button class="nameButton">{val}</button>
+                <button class="nameButtonDelete" onClick={() => deleteCharacterName(val)}>{val}</button>
               ))}
             </div>
           ))
@@ -88,10 +128,11 @@ function App() {
             <input class="characterNameInput" name="name" />
             <button class="submitButton" type="button" onClick={submitCharacterName}>Submit Name</button>
           </form>
+        {invalidCharacterForm ? (<p class="invalidCharacterSubmitted">The character name you submitted is invalid. Please ensure your character names are unique and between 1 and 12 characters in length.</p>) : null}
         </div>) : null}
       </div>
     </div>
   )
 }
 
-export default App
+export default CharacterRegistration
