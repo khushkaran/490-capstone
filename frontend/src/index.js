@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import CharacterRegistration from './CharacterRegistration';
-import SoundRegistration from './SoundRegistration';
+import App from './App';
 import './App.css';
 import reportWebVitals from './reportWebVitals';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <CharacterRegistration />
+    <App />
   </React.StrictMode>
 );
 
