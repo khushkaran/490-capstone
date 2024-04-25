@@ -8,6 +8,10 @@ function ReaderRegistration() {
     const [reader3, setReader3] = useState("")
     const [reader4, setReader4] = useState("")
     const [allReadersRegistered, setAllReadersRegistered] = useState(0)
+    const [issueWithPort1, setIssueWithPort1] = useState(0)
+    const [issueWithPort2, setIssueWithPort2] = useState(0)
+    const [issueWithPort3, setIssueWithPort3] = useState(0)
+    const [issueWithPort4, setIssueWithPort4] = useState(0)
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -34,6 +38,10 @@ function ReaderRegistration() {
     }
 
     function saveChanges() {
+        setIssueWithPort1(0)
+        setIssueWithPort2(0)
+        setIssueWithPort3(0)
+        setIssueWithPort4(0)
         setReader1(document.forms["registerArduinosForm"]["reader1port"].value)
         setReader2(document.forms["registerArduinosForm"]["reader2port"].value)
         setReader3(document.forms["registerArduinosForm"]["reader3port"].value)
@@ -45,6 +53,23 @@ function ReaderRegistration() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ "reader1": document.forms["registerArduinosForm"]["reader1port"].value, "reader2": document.forms["registerArduinosForm"]["reader2port"].value, "reader3": document.forms["registerArduinosForm"]["reader3port"].value, "reader4": document.forms["registerArduinosForm"]["reader4port"].value })
+        }).then(function (response) {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    setIssueWithPort1(1)
+                }
+                if (response.status === 402) {
+                    setIssueWithPort2(1)
+                }
+                if (response.status === 403) {
+                    setIssueWithPort3(1)
+                }
+                if (response.status === 404) {
+                    setIssueWithPort4(1)
+                }
+            }
+        }).catch(error => {
+            console.log(error)
         })
     }
 
@@ -94,6 +119,10 @@ function ReaderRegistration() {
                 </form>
             </div>
             {allReadersRegistered ? (<p>All Arduinos have been registered! Proceed to Register Characters</p>) : <p class="invalidCharacterSubmitted">You have not added a port for all Arduinos yet. Please add a port for all 4 Arduinos and save your changes so you can proceed.</p>}
+            {issueWithPort1 ? <p class="invalidCharacterSubmitted">The port you submitted for reader 1 incorrect. Please double check and resubmit.</p> : null}
+            {issueWithPort2 ? <p class="invalidCharacterSubmitted">The port you submitted for reader 2 incorrect. Please double check and resubmit.</p> : null}
+            {issueWithPort3 ? <p class="invalidCharacterSubmitted">The port you submitted for reader 3 incorrect. Please double check and resubmit.</p> : null}
+            {issueWithPort4 ? <p class="invalidCharacterSubmitted">The port you submitted for reader 4 incorrect. Please double check and resubmit.</p> : null}
         </div>
     )
 }

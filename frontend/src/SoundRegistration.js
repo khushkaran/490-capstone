@@ -32,7 +32,7 @@ function SoundRegistration() {
             "prevName": charName,
             "reader": readerName,
             "newName": charName,
-            "soundFile": "/Users/thakshamangalam/Documents/490-capstone/" + file.name
+            "soundFile": file.name
 
         }])
     }

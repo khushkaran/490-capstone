@@ -309,17 +309,17 @@ class Ports(Resource):
                         return {"reader1": args['reader1'], "reader2": args['reader2'], "reader3": args['reader3'], "reader4": args['reader4']}, 201
                     
                     except Exception as e:
-                        abort(400, message="Invalid Port")
+                        abort(404, message="reader4 is invalid")
 
                 except Exception as e:
-                    abort(400, message="Invalid Port")
+                    abort(403, message="reader3 is invalid")
                 
 
             except Exception as e:
-                return abort(400, message="Invalid Port")
+                abort(402, message="reader2 is invalid")
             
         except Exception as e:
-            return abort(400, message="Invalid Port")
+                abort(401, message="reader1 is invalid")
         
     
  

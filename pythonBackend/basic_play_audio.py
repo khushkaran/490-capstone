@@ -6,6 +6,7 @@ from queue import Queue
 import threading
 from queue import Empty
 import requests
+import pathlib
 
 #reference: https:// stackoverflow.com / questions / 38861980 / attempting - to - read -from-two - serial - ports - at - once
 rfid_reader_queue = Queue(1000)
@@ -105,7 +106,7 @@ while True:
 
                 if (soundFile != "" and lastPlayed != soundFile):
                     # sound file exsist
-                    playsound(soundFile)
+                    playsound(str(pathlib.Path()) + '/../audios/' + soundFile)
                     lastPlayed = soundFile
 
 
