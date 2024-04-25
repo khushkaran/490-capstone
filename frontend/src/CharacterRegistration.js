@@ -144,9 +144,7 @@ function CharacterRegistration() {
           <div class="characterNamesContainer">
             {listOfCharacters.map((item) => (
               <div class="characterNameItem">
-                {Object.values(item).map((val) => (
-                  <button class="nameButtonDelete" onClick={() => deleteCharacterName(val)}>{val}</button>
-                ))}
+                <button class="nameButtonDelete" onClick={() => deleteCharacterName(item.name)}>{item.name}</button>
               </div>
             ))
             }
