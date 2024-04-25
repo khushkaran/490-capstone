@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 function SoundRegistration() {
     const [listOfCharacters, setListOfCharacters] = useState([])
-    const [listOfReaders, setListOfReaders] = useState(["reader1", "reader2"])
+    const [listOfReaders, setListOfReaders] = useState([])
     const [newlyUploadedFiles, setNewlyUploadedFiles] = useState([])
     const [existingAssociations, setExistingAssociations] = useState({})
+    const [listOfEntries, setListOfEntries] = useState([])
+    const [doneRefreshing, setDoneRefreshing] = useState(0)
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -23,7 +25,7 @@ function SoundRegistration() {
         navigate(path);
     }
 
-    function getUpdatedSoundAssociations() {
+    function setInitialSoundAssociations() {
         let newJson = {}
         listOfReaders.map((readerItem, readerIndex) => {
             listOfCharacters.map((charItem, charIndex) => {
@@ -40,9 +42,27 @@ function SoundRegistration() {
                 //     console.log(soundAssociations)
                 // })
 
-                console.log(`${charItem["name"]}-${readerItem}`)
+                console.log(`${charItem["name"]}--${readerItem}`)
 
             })
+        })
+    }
+
+    function getUpdatedSoundAssociations() {  
+        listOfCharacters.map((charItem, charIndex) => {
+            fetch(`http://127.0.0.1:5000/updateChar/${Object.values(charItem)[0]}`, {
+                    method: 'GET'
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (soundAssociations) {
+                    console.log(soundAssociations)
+                    let newJson = {
+                        "name": Object.values(charItem)[0],
+                        "reader": soundAssociations["reader"],
+                        "soundFile": soundAssociations["soundFile"]
+                    }
+                    setListOfEntries(listOfEntries => [...listOfEntries, newJson])
+                })
         })
     }
 
@@ -72,13 +92,12 @@ function SoundRegistration() {
         }).then(function (listOfCharJson) {
             setListOfCharacters(listOfCharJson)
             console.log(`GET call to getAllChar completed, and ${listOfCharacters} stored in listOfCharacters.`)
-            getUpdatedSoundAssociations()
         })
-
-
-
-
     }, [])
+
+    useEffect(() => {
+        getUpdatedSoundAssociations()
+    }, [listOfCharacters])
 
     return (
         <div class="soundRegistrationPage">
@@ -104,7 +123,7 @@ function SoundRegistration() {
                             <th class="soundTableHeader">Sound File</th>
                         </tr>
                     </thead>
-                    {listOfReaders.map((readerItem, readerIndex) => {
+                    {/* {listOfReaders.map((readerItem, readerIndex) => {
                         return (
                             // <table class="soundTable">
                             <tbody className='soundTableBody'>
@@ -120,6 +139,20 @@ function SoundRegistration() {
                                 ))}
                             </tbody>
                             // </table>
+                        )
+                    })} */}
+                    {listOfEntries.map((item, charIndex) => {
+                        return (
+                            <tbody className='soundTableBody'>
+                                <tr>
+                                    <td>{Object.values(item)[0]}</td>
+                                    <td>{Object.values(item)[1]}</td>
+                                    <td>
+                                        <input type="file" onChange={(event) => fileUploaded(Object.values(item)[0], 'id', event)} />
+                                        <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
+                                    </td>
+                                </tr>
+                            </tbody>
                         )
                     })}
                 </table>

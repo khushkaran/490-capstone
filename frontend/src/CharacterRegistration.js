@@ -27,7 +27,7 @@ function CharacterRegistration() {
 
   function submitCharacterName() {
     const charName = document.forms["setCharacterNameForm"]["name"].value
-    if (charName.length < 1 || charName.length > 12) {
+    if (charName.length < 1 || charName.length > 24) {
       setInvalidCharacterForm(1);
       console.log("Setting invalidCharacterForm to 1")
     } else {
@@ -154,13 +154,13 @@ function CharacterRegistration() {
         </div>
         <div class="characterRegistration">
           <h3>Register New Characters:</h3>
-          {displayForm ? (<p class='scanTag'>Tag detected. Give this tag a character name.</p>) : (<p class='scanTag'>Scan a tag, and a prompt will appear to name the character associated with that tag.</p>)}
+          {displayForm ? (<p class='scanTag'>Tag detected. Give this tag a character name.</p>) : (<p class='scanTag'>Scan a tag, and a prompt will appear to name the character associated with that tag. Scan the tag on each reader you want sound for.</p>)}
           {displayForm ? (<div class="characterRegistrationPopup">
             <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitCharacterName}>
               <input class="characterNameInput" name="name" />
               <button class="submitButton" type="button" onClick={submitCharacterName}>Submit Name</button>
             </form>
-            {invalidCharacterForm ? (<p class="invalidCharacterSubmitted">The character name you submitted is invalid. Please ensure your character names are unique and between 1 and 12 characters in length.</p>) : null}
+            {invalidCharacterForm ? (<p class="invalidCharacterSubmitted">The character name you submitted is invalid. Please ensure your character names are unique and between 1 and 24 characters in length.</p>) : null}
           </div>) : null}
         </div>
       </div>
