@@ -100,7 +100,8 @@ resource_fields_update_char = {
 }
 
 resource_fields_sound_file = {
-    'soundFile': fields.String
+    'soundFile': fields.String,
+    'reader': fields.String
 }
 
 resource_fields_ports = {
