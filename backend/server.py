@@ -114,12 +114,15 @@ resource_fields_name_and_ports= {
 }
 
 
-resource_fields_char_table = {
+resource_fields_soundFiles = {
     'soundFile': fields.String,
-    'reader': fields.String
 }
 
-
+resource_fields_char_table = {
+    'name': fields.String,
+    'reader': fields.String,
+    'soundFile': fields.String
+}
 
 
 
@@ -194,7 +197,7 @@ class GetReaderAndTags(Resource):
 class GetAllChar(Resource):
 
     # returns the name of all characters that have been scanned or an empty list if there are no character names
-    @marshal_with(resource_fields_char_name)
+    @marshal_with(resource_fields_char_table)
     def get(self):
         result = CharacterModel.query.filter_by(isRegistered=True).all()
         return result
@@ -238,7 +241,7 @@ class LinkSoundFileToCharcater(Resource):
 
         return result
     
-    @marshal_with(resource_fields_char_table)
+    @marshal_with(resource_fields_soundFiles)
     def get(self, name):
         result =  CharacterModel.query.filter_by(name=name).first()
         if not result:
@@ -286,8 +289,6 @@ class Ports(Resource):
         return {"reader1": args['reader1'], "reader2": args['reader2'], "reader3": args['reader3'], "reader4": args['reader4']}, 201
     
  
-     
-    
 api.add_resource(ModifyChar, "/modifyChar")
 api.add_resource(GetAllChar, "/getAllChar")
 api.add_resource(GetRecentlyScannedChar, "/getRecentlyScannedChar")
