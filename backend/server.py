@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, marshal_with, fields
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from serial import Serial
 
 
 # how to run it: flask --app server --debug run
@@ -70,7 +71,8 @@ add_ports_args.add_argument("reader4", type=str, help="reader4 is needed", requi
 
 
 get_sound_file_args = reqparse.RequestParser()
-get_sound_file_args.add_argument("name", type=str, help="Name of character is needed", required=True)
+get_sound_file_args.add_argument("reader", type=str, help="Reader associated with character is needed", required=True)
+get_sound_file_args.add_argument("tag", type=str, help="Tag associated with character is needed", required=True)
 
 
 
@@ -247,7 +249,7 @@ class LinkSoundFileToCharcater(Resource):
     @marshal_with(resource_fields_soundFiles)
     def get(self):
         args = get_sound_file_args.parse_args()
-        result =  CharacterModel.query.filter_by(name=args['name']).first()
+        result =  CharacterModel.query.filter_by(tag=args['tag'], reader=args['reader']).first()
         if not result:
             return []
         return result
@@ -265,32 +267,60 @@ class Ports(Resource):
     @marshal_with(resource_fields_ports)
     def patch(self):
         args =  add_ports_args.parse_args() 
-        reader1Result = PortModel.query.filter_by(name='reader1').first()
-        reader2Result = PortModel.query.filter_by(name='reader2').first()
-        reader3Result = PortModel.query.filter_by(name='reader3').first()
-        reader4Result = PortModel.query.filter_by(name='reader4').first()
+        
+        try:
+            Serial(args['reader1'])
 
-        # no ports have been assgined yet
-        if not reader1Result:
-            reader1 = PortModel(name="reader1", port=args['reader1'])
-            reader2 = PortModel(name="reader2", port=args['reader2'])
-            reader3 = PortModel(name="reader3", port=args['reader3'])
-            reader4 = PortModel(name="reader4", port=args['reader4'])
-            db.session.add(reader1)
-            db.session.add(reader2)
-            db.session.add(reader3)
-            db.session.add(reader4)
+            try:
+                Serial(args['reader2'])
 
-        else:
-            # ports have been assigned, just being updated
-            reader1Result.port = args['reader1']
-            reader2Result.port = args['reader2']
-            reader3Result.port = args['reader3']
-            reader4Result.port = args['reader4']
+                try: 
+                    Serial(args['reader3'])
 
-        db.session.commit()
+                    try: 
+                        Serial(args['reader4'])
 
-        return {"reader1": args['reader1'], "reader2": args['reader2'], "reader3": args['reader3'], "reader4": args['reader4']}, 201
+                        reader1Result = PortModel.query.filter_by(name='reader1').first()
+                        reader2Result = PortModel.query.filter_by(name='reader2').first()
+                        reader3Result = PortModel.query.filter_by(name='reader3').first()
+                        reader4Result = PortModel.query.filter_by(name='reader4').first()
+
+
+                        # no ports have been assgined yet
+                        if not reader1Result:
+                            reader1 = PortModel(name="reader1", port=args['reader1'])
+                            reader2 = PortModel(name="reader2", port=args['reader2'])
+                            reader3 = PortModel(name="reader3", port=args['reader3'])
+                            reader4 = PortModel(name="reader4", port=args['reader4'])
+                            db.session.add(reader1)
+                            db.session.add(reader2)
+                            db.session.add(reader3)
+                            db.session.add(reader4)
+
+                        else:
+                            # ports have been assigned, just being updated
+                            reader1Result.port = args['reader1']
+                            reader2Result.port = args['reader2']
+                            reader3Result.port = args['reader3']
+                            reader4Result.port = args['reader4']
+
+                        db.session.commit()
+
+                        return {"reader1": args['reader1'], "reader2": args['reader2'], "reader3": args['reader3'], "reader4": args['reader4']}, 201
+                    
+                    except Exception as e:
+                        abort(400, message="Invalid Port")
+
+                except Exception as e:
+                    abort(400, message="Invalid Port")
+                
+
+            except Exception as e:
+                return abort(400, message="Invalid Port")
+            
+        except Exception as e:
+            return abort(400, message="Invalid Port")
+        
     
  
 api.add_resource(ModifyChar, "/modifyChar")

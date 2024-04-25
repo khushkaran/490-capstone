@@ -14,6 +14,7 @@ reader1 = None
 reader2 = None
 reader3 = None
 reader4 = None
+lastPlayed = ""
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -58,6 +59,7 @@ def assignSerialPorts():
         result = response.json()
 
 
+
         if result !=  []:
             # user has passed serial ports
             reader1 = Serial(result[0]['port'])
@@ -76,6 +78,7 @@ def assignSerialPorts():
 
 while True:
 
+
     try:
 
         if assignSerialPorts():
@@ -86,8 +89,9 @@ while True:
             data = {"name": name, "tag": tag, "reader": port_name, "soundFile": ""}
 
             # get tag and reader info from database
-            response = requests.get(BASE + "/updateChar", {"name": name})
+            response = requests.get(BASE + "/updateChar", {"tag": tag, "reader": port_name})
             result = response.json()
+            print(result)
 
 
             if (result == []):
@@ -99,9 +103,13 @@ while True:
                 # there is such association, so it is being tapped again to play the sound
                 soundFile = result['soundFile']
 
-                if (soundFile != ""):
+                if (soundFile != "" and lastPlayed != soundFile):
                     # sound file exsist
                     playsound(soundFile)
+                    lastPlayed = soundFile
+
+
+
 
 
 

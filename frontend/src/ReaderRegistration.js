@@ -43,8 +43,8 @@ function ReaderRegistration() {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-              },
-            body: JSON.stringify({ "reader1": reader1, "reader2": reader2, "reader3": reader3, "reader4": reader4 })
+            },
+            body: JSON.stringify({ "reader1": document.forms["registerArduinosForm"]["reader1port"].value, "reader2": document.forms["registerArduinosForm"]["reader2port"].value, "reader3": document.forms["registerArduinosForm"]["reader3port"].value, "reader4": document.forms["registerArduinosForm"]["reader4port"].value })
         })
     }
 
@@ -54,13 +54,14 @@ function ReaderRegistration() {
         }).then(function (response) {
             return response.json();
         }).then(function (myJson) {
-            setReader1(myJson[0]["port"])
-            setReader2(myJson[1]["port"])
-            setReader3(myJson[2]["port"])
-            setReader4(myJson[3]["port"])
-
+            if (myJson.length > 0) {
+                setReader1(myJson[0]["port"])
+                setReader2(myJson[1]["port"])
+                setReader3(myJson[2]["port"])
+                setReader4(myJson[3]["port"])
+            }
             checkIfAllReadersRegistered()
-        })        
+        })
     }, [reader1, reader2, reader3, reader4, allReadersRegistered])
 
     return (

@@ -9,19 +9,19 @@ function CharacterRegistration() {
   const [displayForm, setDisplayForm] = useState(0)
   const [invalidCharacterForm, setInvalidCharacterForm] = useState(0)
 
-  let navigate = useNavigate(); 
-  const readerRoute = () =>{ 
-    let path = `/`; 
+  let navigate = useNavigate();
+  const readerRoute = () => {
+    let path = `/`;
     navigate(path);
   }
 
-  const characterRoute = () =>{ 
-    let path = `/characterRegistration`; 
+  const characterRoute = () => {
+    let path = `/characterRegistration`;
     navigate(path);
   }
 
-  const soundRoute = () =>{ 
-    let path = `/soundRegistration`; 
+  const soundRoute = () => {
+    let path = `/soundRegistration`;
     navigate(path);
   }
 
@@ -103,20 +103,22 @@ function CharacterRegistration() {
       }).then(function (myJson) {
         const newChars = myJson
         setCharacterAwaitingName(newChars)
+
+        console.log(`GET call to getRecentlyScannedChar completed, and ${JSON.stringify(characterAwaitingName)} stored in characterAwaitingName.`)
+        if (Object.keys(characterAwaitingName).length !== 0) {
+          if (characterAwaitingName['tag']) {
+            console.log('characterAwaitingName contains a valid tag-reader combination, rendering form.')
+            setDisplayForm(1)
+          }
+          clearInterval(checkForNewCharInterval) // To check once the arduino is hooked up: This might have to be moved in the if
+          // statement that is above this. 
+        } else {
+          console.log('characterAwaitingName does not contain a valid tag-reader combination. Form will not be rendered.')
+        }
       })
     }, 1000)
 
-    console.log(`GET call to getRecentlyScannedChar completed, and ${characterAwaitingName} stored in characterAwaitingName.`)
-    if (Object.keys(characterAwaitingName).length !== 0) {
-      if (characterAwaitingName['tag']) {
-        console.log('characterAwaitingName contains a valid tag-reader combination, rendering form.')
-        setDisplayForm(1)
-      }
-      clearInterval(checkForNewCharInterval) // To check once the arduino is hooked up: This might have to be moved in the if
-      // statement that is above this. 
-    } else {
-      console.log('characterAwaitingName does not contain a valid tag-reader combination. Form will not be rendered.')
-    }
+
 
     return () => {
       clearInterval(checkForNewCharInterval)
@@ -128,13 +130,13 @@ function CharacterRegistration() {
     <div class="characterRegistrationPage">
       <div class='sidebar'>
         <div class="sidebarItem">
-        <button class="sidebarButton" id='readersNav' onClick={() => readerRoute()}>Register Arduinos</button>
+          <button class="sidebarButton" id='readersNav' onClick={() => readerRoute()}>Register Arduinos</button>
         </div>
         <div class="sidebarItem">
-        <button class="sidebarButton" id='charactersNav' onClick={() => characterRoute()}>Register Characters</button>
+          <button class="sidebarButton" id='charactersNav' onClick={() => characterRoute()}>Register Characters</button>
         </div>
         <div class="sidebarItem">
-        <button class="sidebarButton" id='soundsNav' onClick={() => soundRoute()}>Register Sounds</button>
+          <button class="sidebarButton" id='soundsNav' onClick={() => soundRoute()}>Register Sounds</button>
         </div>
       </div>
       <div class="nonSidebar">

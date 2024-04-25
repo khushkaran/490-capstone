@@ -32,7 +32,8 @@ function SoundRegistration() {
             "prevName": charName,
             "reader": readerName,
             "newName": charName,
-            "soundFile": file.name
+            "soundFile": "/Users/thakshamangalam/Documents/490-capstone/" + file.name
+
         }])
     }
 
@@ -88,7 +89,7 @@ function SoundRegistration() {
                 <h1 key={"header"}>Add Sounds to Characters</h1>
                 <h3 key={"headerExplanation"}>Choose a sound file for your character-reader pairs! If you don't want any sound, just don't select a file. You can overwrite your old sound file by choosing a new file. Remember to save your changes!</h3>
                 {(listOfCharacters.length === 0) ? <p>You have not registered any characters. Please register your characters and return to this page.</p> : <table class="soundTable">
-                <thead>
+                    <thead>
                         <tr>
                             <th class="soundTableHeader">Character</th>
                             <th class="soundTableHeader">Reader</th>
@@ -111,9 +112,9 @@ function SoundRegistration() {
                             </tbody>
                         )
                     })}
-                    </table>}
+                </table>}
                 <div class="submitButtonContainer">
-                <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
+                    <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
                 </div>
 
             </div>
