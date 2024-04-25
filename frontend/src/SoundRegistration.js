@@ -25,47 +25,6 @@ function SoundRegistration() {
         navigate(path);
     }
 
-    function setInitialSoundAssociations() {
-        let newJson = {}
-        listOfReaders.map((readerItem, readerIndex) => {
-            listOfCharacters.map((charItem, charIndex) => {
-                let name = `${charItem["name"]}_${readerItem}`
-                // fetch('http://127.0.0.1:5000/updateChar', {
-                //     method: 'GET',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({ "name": "Taylor" })
-                // }).then(function (response) {
-                //     return response.json();
-                // }).then(function (soundAssociations) {
-                //     console.log(soundAssociations)
-                // })
-
-                console.log(`${charItem["name"]}--${readerItem}`)
-
-            })
-        })
-    }
-
-    function getUpdatedSoundAssociations() {  
-        listOfCharacters.map((charItem, charIndex) => {
-            fetch(`http://127.0.0.1:5000/updateChar/${Object.values(charItem)[0]}`, {
-                    method: 'GET'
-                }).then(function (response) {
-                    return response.json();
-                }).then(function (soundAssociations) {
-                    console.log(soundAssociations)
-                    let newJson = {
-                        "name": Object.values(charItem)[0],
-                        "reader": soundAssociations["reader"],
-                        "soundFile": soundAssociations["soundFile"]
-                    }
-                    setListOfEntries(listOfEntries => [...listOfEntries, newJson])
-                })
-        })
-    }
-
     function fileUploaded(charName, readerName, event) {
         const file = event.target.files[0];
         setNewlyUploadedFiles([...newlyUploadedFiles, {
@@ -74,12 +33,27 @@ function SoundRegistration() {
             "newName": charName,
             "soundFile": file.name
         }])
-        console.log(JSON.stringify(newlyUploadedFiles))
     }
 
     function submitUploadedFiles() {
-        console.log("changes saved")
         // iterate over the array and send the patch requests
+        newlyUploadedFiles.map((reqToSend, reqToSendIndex) => {
+            console.log(reqToSend)
+            fetch(`http://127.0.0.1:5000/updateChar`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: reqToSend
+            }).then(function (response) {
+                if (!response.ok) {
+                    console.log(`There is an issue with the request.`)
+                }
+            }).catch(error => {
+                console.log(error)
+            })
+        })
 
         setNewlyUploadedFiles([])
     }
@@ -91,13 +65,8 @@ function SoundRegistration() {
             return response.json();
         }).then(function (listOfCharJson) {
             setListOfCharacters(listOfCharJson)
-            console.log(`GET call to getAllChar completed, and ${listOfCharacters} stored in listOfCharacters.`)
         })
     }, [])
-
-    useEffect(() => {
-        getUpdatedSoundAssociations()
-    }, [listOfCharacters])
 
     return (
         <div class="soundRegistrationPage">
@@ -123,34 +92,13 @@ function SoundRegistration() {
                             <th class="soundTableHeader">Sound File</th>
                         </tr>
                     </thead>
-                    {/* {listOfReaders.map((readerItem, readerIndex) => {
-                        return (
-                            // <table class="soundTable">
-                            <tbody className='soundTableBody'>
-                                {listOfCharacters.map((item, charIndex) => (
-                                    <tr>
-                                        <td>{Object.values(item)[0]}</td>
-                                        <td>{readerItem}</td>
-                                        <td>
-                                            <input type="file" onChange={(event) => fileUploaded(Object.values(item)[0], readerItem, event)} />
-                                            <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            // </table>
-                        )
-                    })} */}
-                    {listOfEntries.map((item, charIndex) => {
+                    {listOfCharacters.map((item, charIndex) => {
                         return (
                             <tbody className='soundTableBody'>
                                 <tr>
-                                    <td>{Object.values(item)[0]}</td>
-                                    <td>{Object.values(item)[1]}</td>
-                                    <td>
-                                        <input type="file" onChange={(event) => fileUploaded(Object.values(item)[0], 'id', event)} />
-                                        <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
-                                    </td>
+                                    <td>{item.name}</td>
+                                    <td>{item.reader}</td>
+                                    <td>{item.soundFile ? (<p>File: {item.soundFile}. You may choose a new file if desired: </p>) : (<input type="file" onChange={(event) => fileUploaded(item.name, item.reader, event)} />)}</td>
                                 </tr>
                             </tbody>
                         )
@@ -161,15 +109,6 @@ function SoundRegistration() {
                 <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitUploadedFiles}>
                     <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
                 </form>
-
-                {listOfCharacters.map((item) => (
-                    <div class="characterNameItem">
-                        {Object.values(item).map((val) => (
-                            <button class="nameButton">{val}</button>
-                        ))}
-                    </div>
-                ))
-                }
             </div>
         </div>
     )
