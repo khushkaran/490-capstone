@@ -7,6 +7,7 @@ function ReaderRegistration() {
     const [reader2, setReader2] = useState("")
     const [reader3, setReader3] = useState("")
     const [reader4, setReader4] = useState("")
+    const [allReadersRegistered, setAllReadersRegistered] = useState(0)
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -24,13 +25,27 @@ function ReaderRegistration() {
         navigate(path);
     }
 
+    function checkIfAllReadersRegistered() {
+        if (reader1 === "" || reader2 === "" || reader3 === "" || reader4 === "") {
+            setAllReadersRegistered(0)
+        } else {
+            setAllReadersRegistered(1)
+        }
+    }
+
     function saveChanges() {
         setReader1(document.forms["registerArduinosForm"]["reader1port"].value)
         setReader2(document.forms["registerArduinosForm"]["reader2port"].value)
         setReader3(document.forms["registerArduinosForm"]["reader3port"].value)
         setReader4(document.forms["registerArduinosForm"]["reader4port"].value)
 
-        // TODO: patch requests
+        fetch('http://127.0.0.1:5000/ports', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+              },
+            body: JSON.stringify({ "reader1": reader1, "reader2": reader2, "reader3": reader3, "reader4": reader4 })
+        })
     }
 
     useEffect(() => {
@@ -39,9 +54,14 @@ function ReaderRegistration() {
         }).then(function (response) {
             return response.json();
         }).then(function (myJson) {
-            // TODO: update the reader values based on the response of the GET request
-        })
-    }, [reader1, reader2, reader3, reader4])
+            setReader1(myJson[0]["port"])
+            setReader2(myJson[1]["port"])
+            setReader3(myJson[2]["port"])
+            setReader4(myJson[3]["port"])
+
+            checkIfAllReadersRegistered()
+        })        
+    }, [reader1, reader2, reader3, reader4, allReadersRegistered])
 
     return (
         <div class="readerRegistrationPage">
@@ -72,6 +92,7 @@ function ReaderRegistration() {
                     <button class="submitButton" type="button" onClick={() => { saveChanges() }}>Save Changes</button>
                 </form>
             </div>
+            {allReadersRegistered ? (<p>All Arduinos have been registered! Proceed to Register Characters</p>) : <p class="invalidCharacterSubmitted">You have not added a port for all Arduinos yet. Please add a port for all 4 Arduinos and save your changes so you can proceed.</p>}
         </div>
     )
 }
