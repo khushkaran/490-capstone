@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 function SoundRegistration() {
     const [listOfCharacters, setListOfCharacters] = useState([])
-    const [listOfReaders, setListOfReaders] = useState(["serA", "serB"])
+    const [listOfReaders, setListOfReaders] = useState(["reader1", "reader2"])
     const [newlyUploadedFiles, setNewlyUploadedFiles] = useState([])
+    const [existingAssociations, setExistingAssociations] = useState({})
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -20,6 +21,29 @@ function SoundRegistration() {
     const soundRoute = () => {
         let path = `/soundRegistration`;
         navigate(path);
+    }
+
+    function getUpdatedSoundAssociations() {
+        let newJson = {}
+        listOfReaders.map((readerItem, readerIndex) => {
+            listOfCharacters.map((charItem, charIndex) => {
+                let name = `${charItem["name"]}_${readerItem}`
+                // fetch('http://127.0.0.1:5000/updateChar', {
+                //     method: 'GET',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ "name": "Taylor" })
+                // }).then(function (response) {
+                //     return response.json();
+                // }).then(function (soundAssociations) {
+                //     console.log(soundAssociations)
+                // })
+
+                console.log(`${charItem["name"]}-${readerItem}`)
+
+            })
+        })
     }
 
     function fileUploaded(charName, readerName, event) {
@@ -48,7 +72,12 @@ function SoundRegistration() {
         }).then(function (listOfCharJson) {
             setListOfCharacters(listOfCharJson)
             console.log(`GET call to getAllChar completed, and ${listOfCharacters} stored in listOfCharacters.`)
+            getUpdatedSoundAssociations()
         })
+
+
+
+
     }, [])
 
     return (
@@ -65,32 +94,36 @@ function SoundRegistration() {
                 </div>
             </div>
             <div class="nonSidebar">
-                <table>
+                <h1 key={"header"}>Add Sounds to Characters</h1>
+                <h3 key={"headerExplanation"}>Choose a sound file for your character-reader pairs! If you don't want any sound, just don't select a file. You can overwrite your old sound file by choosing a new file. Remember to save your changes!</h3>
+                <table class="soundTable">
                     <thead>
                         <tr>
-                            <th>Character</th>
-                            <th>Reader</th>
-                            <th>Sound File</th>
+                            <th class="soundTableHeader">Character</th>
+                            <th class="soundTableHeader">Reader</th>
+                            <th class="soundTableHeader">Sound File</th>
                         </tr>
                     </thead>
-                </table>
-                {listOfReaders.map((readerItem, readerIndex) => {
-                    return (<div>
-                        <table>
-                            <tbody>
+                    {listOfReaders.map((readerItem, readerIndex) => {
+                        return (
+                            // <table class="soundTable">
+                            <tbody className='soundTableBody'>
                                 {listOfCharacters.map((item, charIndex) => (
                                     <tr>
                                         <td>{Object.values(item)[0]}</td>
                                         <td>{readerItem}</td>
                                         <td>
                                             <input type="file" onChange={(event) => fileUploaded(Object.values(item)[0], readerItem, event)} />
+                                            <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
-                    </div>)
-                })}
+                            // </table>
+                        )
+                    })}
+                </table>
+
 
                 <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitUploadedFiles}>
                     <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
