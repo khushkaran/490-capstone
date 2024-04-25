@@ -36,6 +36,11 @@ p{
   margin-right: 30%;
 }
 
+.submitButtonContainer {
+  display: flex;
+  justify-content: center;
+}
+
 .registerArduinosForm{
   display: grid;
   grid-template-columns: auto auto;
@@ -187,5 +192,44 @@ p{
   transition-duration: 0.4s;
   padding: 2% 10%;
   font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.soundTable {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 75%;
+  margin: auto;
+}
+
+.soundTableHeader {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  font-size: 25px;
+}
+
+.soundTableBody {
+  text-align: center;
+}
+
+.soundFileBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 80%;
+}
+
+.soundFileName {
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+td {
+  min-width: 150px;
+  border-radius: 10px;
+  border: 3px solid rgb(234, 234, 234);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

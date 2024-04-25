@@ -27,6 +27,7 @@ function SoundRegistration() {
 
     function fileUploaded(charName, readerName, event) {
         const file = event.target.files[0];
+
         setNewlyUploadedFiles([...newlyUploadedFiles, {
             "prevName": charName,
             "reader": readerName,
@@ -35,17 +36,17 @@ function SoundRegistration() {
         }])
     }
 
+
     function submitUploadedFiles() {
         // iterate over the array and send the patch requests
         newlyUploadedFiles.map((reqToSend, reqToSendIndex) => {
-            console.log(reqToSend)
             fetch(`http://127.0.0.1:5000/updateChar`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
                 },
-                body: reqToSend
+                body: JSON.stringify(reqToSend)
             }).then(function (response) {
                 if (!response.ok) {
                     console.log(`There is an issue with the request.`)
@@ -55,6 +56,7 @@ function SoundRegistration() {
             })
         })
 
+        setDoneRefreshing(1)
         setNewlyUploadedFiles([])
     }
 
@@ -65,8 +67,9 @@ function SoundRegistration() {
             return response.json();
         }).then(function (listOfCharJson) {
             setListOfCharacters(listOfCharJson)
+            setDoneRefreshing(0)
         })
-    }, [])
+    }, [doneRefreshing])
 
     return (
         <div class="soundRegistrationPage">
@@ -84,8 +87,8 @@ function SoundRegistration() {
             <div class="nonSidebar">
                 <h1 key={"header"}>Add Sounds to Characters</h1>
                 <h3 key={"headerExplanation"}>Choose a sound file for your character-reader pairs! If you don't want any sound, just don't select a file. You can overwrite your old sound file by choosing a new file. Remember to save your changes!</h3>
-                <table class="soundTable">
-                    <thead>
+                {(listOfCharacters.length === 0) ? <p>You have not registered any characters. Please register your characters and return to this page.</p> : <table class="soundTable">
+                <thead>
                         <tr>
                             <th class="soundTableHeader">Character</th>
                             <th class="soundTableHeader">Reader</th>
@@ -98,17 +101,21 @@ function SoundRegistration() {
                                 <tr>
                                     <td>{item.name}</td>
                                     <td>{item.reader}</td>
-                                    <td>{item.soundFile ? (<p>File: {item.soundFile}. You may choose a new file if desired: </p>) : (<input type="file" onChange={(event) => fileUploaded(item.name, item.reader, event)} />)}</td>
+                                    <td>{item.soundFile ? (
+                                        <div class="soundFileBox">
+                                            <p class="soundFileName">{item.soundFile}</p>
+                                            <input type="file" accept=".mp3" onChange={(event) => fileUploaded(item.name, item.reader, event)} />
+                                        </div>
+                                    ) : <input type="file" accept=".mp3" onChange={(event) => fileUploaded(item.name, item.reader, event)} />}</td>
                                 </tr>
                             </tbody>
                         )
                     })}
-                </table>
+                    </table>}
+                <div class="submitButtonContainer">
+                <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
+                </div>
 
-
-                <form class="setCharacterNameForm" name="setCharacterNameForm" action={submitUploadedFiles}>
-                    <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
-                </form>
             </div>
         </div>
     )
