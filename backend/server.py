@@ -69,6 +69,9 @@ add_ports_args.add_argument("reader3", type=str, help="reader3 is needed", requi
 add_ports_args.add_argument("reader4", type=str, help="reader4 is needed", required=True)
 
 
+get_sound_file_args = reqparse.RequestParser()
+get_sound_file_args.add_argument("name", type=str, help="Name of character is needed", required=True)
+
 
 
 
@@ -242,8 +245,9 @@ class LinkSoundFileToCharcater(Resource):
         return result
     
     @marshal_with(resource_fields_soundFiles)
-    def get(self, name):
-        result =  CharacterModel.query.filter_by(name=name).first()
+    def get(self):
+        args = get_sound_file_args.parse_args()
+        result =  CharacterModel.query.filter_by(name=args['name']).first()
         if not result:
             return []
         return result
@@ -292,7 +296,7 @@ class Ports(Resource):
 api.add_resource(ModifyChar, "/modifyChar")
 api.add_resource(GetAllChar, "/getAllChar")
 api.add_resource(GetRecentlyScannedChar, "/getRecentlyScannedChar")
-api.add_resource(LinkSoundFileToCharcater, "/updateChar/<string:name>")
+api.add_resource(LinkSoundFileToCharcater, "/updateChar")
 api.add_resource(Ports, "/ports")
 
 
