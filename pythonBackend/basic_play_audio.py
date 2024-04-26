@@ -45,7 +45,7 @@ def startThreading():
                                     args=(reader4, "reader4"))
         threadD.start()
         threadingNotStarted = False
-        print("starting threading")
+
 
 def assignSerialPorts():
 
@@ -67,7 +67,7 @@ def assignSerialPorts():
             reader2 = Serial(result[1]['port'])
             reader3 = Serial(result[2]['port'])
             reader4 = Serial(result[3]['port'])
-            print("done assigning ports")
+            print("Arduino ports have been sucessfully registered!")
             return True
 
         else:
@@ -92,13 +92,13 @@ while True:
             # get tag and reader info from database
             response = requests.get(BASE + "/updateChar", {"tag": tag, "reader": port_name})
             result = response.json()
-            print(result)
+            print("A tag has been scanned.")
 
 
             if (result == []):
                 # there is no such tag and reader association in database
                 response = requests.put(BASE + "/modifyChar", data)
-                print(response.json())
+               
 
             else:
                 # there is such association, so it is being tapped again to play the sound
