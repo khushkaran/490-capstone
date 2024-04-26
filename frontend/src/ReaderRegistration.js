@@ -12,6 +12,7 @@ function ReaderRegistration() {
     const [issueWithPort2, setIssueWithPort2] = useState(0)
     const [issueWithPort3, setIssueWithPort3] = useState(0)
     const [issueWithPort4, setIssueWithPort4] = useState(0)
+    const [changesHaveBeenSaved, setChangesHaveBeenSaved] = useState(0)
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -67,6 +68,8 @@ function ReaderRegistration() {
                 if (response.status === 404) {
                     setIssueWithPort4(1)
                 }
+            } else {
+                setChangesHaveBeenSaved(1)
             }
         }).catch(error => {
             console.log(error)
@@ -86,8 +89,9 @@ function ReaderRegistration() {
                 setReader4(myJson[3]["port"])
             }
             checkIfAllReadersRegistered()
+            setChangesHaveBeenSaved(0)
         })
-    }, [reader1, reader2, reader3, reader4, allReadersRegistered])
+    }, [reader1, reader2, reader3, reader4, allReadersRegistered, changesHaveBeenSaved])
 
     return (
         <div class="readerRegistrationPage">
@@ -116,6 +120,7 @@ function ReaderRegistration() {
                     <input class="characterNameInput" name="reader4port" defaultValue={reader4} type='text' />
                     <p></p>
                     <button class="submitButton" type="button" onClick={() => { saveChanges() }}>Save Changes</button>
+                    {/* {changesHaveBeenSaved ? null : <p>{changesHaveBeenSaved}</p>} */}
                 </form>
             </div>
             {allReadersRegistered ? (<p>All Arduinos have been registered! Proceed to Register Characters</p>) : <p class="invalidCharacterSubmitted">You have not added a port for all Arduinos yet. Please add a port for all 4 Arduinos and save your changes so you can proceed.</p>}

@@ -8,6 +8,7 @@ function SoundRegistration() {
     const [existingAssociations, setExistingAssociations] = useState({})
     const [listOfEntries, setListOfEntries] = useState([])
     const [doneRefreshing, setDoneRefreshing] = useState(0)
+    const [changesHaveBeenSaved, setChangesHaveBeenSaved] = useState(0)
 
     let navigate = useNavigate();
     const readerRoute = () => {
@@ -51,6 +52,8 @@ function SoundRegistration() {
             }).then(function (response) {
                 if (!response.ok) {
                     console.log(`There is an issue with the request.`)
+                } else {
+                    setChangesHaveBeenSaved(1)
                 }
             }).catch(error => {
                 console.log(error)
@@ -69,8 +72,9 @@ function SoundRegistration() {
         }).then(function (listOfCharJson) {
             setListOfCharacters(listOfCharJson)
             setDoneRefreshing(0)
+            setChangesHaveBeenSaved(0)
         })
-    }, [doneRefreshing])
+    }, [doneRefreshing, changesHaveBeenSaved])
 
     return (
         <div class="soundRegistrationPage">
@@ -116,7 +120,7 @@ function SoundRegistration() {
                 <div class="submitButtonContainer">
                     <button class="submitButton" type="button" onClick={submitUploadedFiles}>Save Changes</button>
                 </div>
-
+                {/* {changesHaveBeenSaved ? null : <p>{changesHaveBeenSaved}</p>} */}
             </div>
         </div>
     )
